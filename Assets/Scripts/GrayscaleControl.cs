@@ -1,28 +1,29 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+
 
 public class GrayscaleControl : MonoBehaviour
 {
-    private SpriteRenderer _spriteRenderer;
-    private float _duration = 1f;
+    [SerializeField]
+    private SpriteRenderer spriteRenderer;
+    [SerializeField]
+    private float duration = 10f;
 
-    void Start () 
+
+    private MaterialPropertyBlock propertyBlock = null;
+
+
+    public void StartGrayscaleRoutine()
     {
-        _spriteRenderer = GetComponent<SpriteRenderer>();
+        StartCoroutine(GrayscaleRoutine(duration, true));
     }
 
-    public void StartGrayscaleRoutine ()
+    public void StartResaturateRoutine()
     {
-        StartCoroutine(GrayscaleRoutine(_duration, true));
+        StartCoroutine(GrayscaleRoutine(duration, false));
     }
 
-    public void StartResaturateRoutine ()
-    {
-        StartCoroutine(GrayscaleRoutine(_duration, false));
-    }
-
-    private IEnumerator GrayscaleRoutine (float duration, bool isGrayscale)
+    private IEnumerator GrayscaleRoutine(float duration, bool isGrayscale)
     {
         float time = 0;
         while(duration > time)
@@ -36,12 +37,14 @@ public class GrayscaleControl : MonoBehaviour
         }
 
         SetGrayscale(isGrayscale ? 1 : 0);
-
     }
 
-    public void SetGrayscale (float amount = 1)
+    public void SetGrayscale(float amount = 1)
     {
-        _spriteRenderer.material.SetFloat("_GrayscaleAmount", amount);
+        if (propertyBlock == null) { propertyBlock = new MaterialPropertyBlock(); } 
+        spriteRenderer.GetPropertyBlock(propertyBlock);
+        propertyBlock.SetFloat("_GrayscaleAmount", amount);
+        spriteRenderer.SetPropertyBlock(propertyBlock);
+        Debug.Log("Have set property block");
     }
-
 }

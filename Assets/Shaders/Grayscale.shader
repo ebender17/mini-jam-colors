@@ -7,9 +7,9 @@ Shader "Unlit/Grayscale"
     }
     SubShader
     {
-        Tags { 
-            "RenderType"="Opaque"
-        }
+        Tags { "RenderType"="Transparent" }
+        LOD 100
+        Blend SrcAlpha OneMinusSrcAlpha
 
         Cull Off
 
@@ -52,6 +52,10 @@ Shader "Unlit/Grayscale"
             fixed4 frag (v2f i) : SV_Target
             {
                 fixed4 col = tex2D(_MainTex, i.uv);
+                //1st way
+                //col = (col.r + col.b + col.g) / 3;
+                
+                //2nd way
                 col.rgb = lerp(col.rgb, dot(col.rgb, float3(0.3, 0.59, 0.11)), _GrayscaleAmount);
                 return col;
             }
